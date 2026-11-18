@@ -1,0 +1,6 @@
+{
+  "name": "Styler",
+  "description": "AI-powered personal wardrobe manager and smart outfit stylist using Gemini Vision and outfit combination intelligence.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

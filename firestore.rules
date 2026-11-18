@@ -1,0 +1,251 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Global default-deny safety net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() >= 1 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isValidUserProfile(data) {
+      return data.userId is string &&
+             data.userId == request.auth.uid &&
+             data.userId.size() >= 1 &&
+             data.userId.size() <= 128 &&
+             data.name is string &&
+             data.name.size() >= 1 &&
+             data.name.size() <= 100 &&
+             data.heightCm is int &&
+             data.heightCm >= 100 &&
+             data.heightCm <= 250 &&
+             data.weightKg is int &&
+             data.weightKg >= 25 &&
+             data.weightKg <= 250 &&
+             data.temperatureC is int &&
+             data.temperatureC >= -30 &&
+             data.temperatureC <= 60 &&
+             data.weatherCondition is string &&
+             data.weatherCondition.size() >= 1 &&
+             data.weatherCondition.size() <= 40 &&
+             data.lastMissingPieceTip is string &&
+             data.lastMissingPieceTip.size() <= 500 &&
+             data.profileImageBase64 is string &&
+             data.profileImageBase64.size() <= 350000 &&
+             data.createdAt is timestamp &&
+             data.createdAt <= request.time &&
+             data.updatedAt is timestamp &&
+             data.updatedAt <= request.time;
+    }
+
+    function isValidWardrobeCategory(category) {
+      return category is string &&
+             category in [
+               'Shirt / Top',
+               'Jacket',
+               'Hoodie',
+               'Pullover',
+               'Sweatshirt',
+               'Pant / Bottom',
+               'Shoe / Footwear',
+               'Perfume',
+               'Belt',
+               'Watch',
+               'Shades (Sunglasses)',
+               'Bracelet',
+               'V-Chain (Necklace)',
+               'Ring',
+               'Cap / Hat',
+               'Jacket / Blazer',
+               'Pullover / Sweater',
+               'Perfume / Fragrance'
+             ];
+    }
+
+    function isValidWardrobeItem(data) {
+      return data.userId is string &&
+             data.userId == request.auth.uid &&
+             data.userId.size() >= 1 &&
+             data.userId.size() <= 128 &&
+             data.name is string &&
+             data.name.size() >= 1 &&
+             data.name.size() <= 120 &&
+             isValidWardrobeCategory(data.category) &&
+             data.dominantColor is string &&
+             data.dominantColor.size() >= 1 &&
+             data.dominantColor.size() <= 80 &&
+             data.colorHex is string &&
+             data.colorHex.size() >= 4 &&
+             data.colorHex.size() <= 16 &&
+             data.undertone is string &&
+             data.undertone.size() >= 1 &&
+             data.undertone.size() <= 40 &&
+             data.styleNotes is string &&
+             data.styleNotes.size() <= 600 &&
+             data.imageBase64 is string &&
+             data.imageBase64.size() <= 350000 &&
+             data.createdAt is timestamp &&
+             data.createdAt <= request.time &&
+             data.updatedAt is timestamp &&
+             data.updatedAt <= request.time;
+    }
+
+    function isValidOutfitCombo(data) {
+      return data.userId is string &&
+             data.userId == request.auth.uid &&
+             data.userId.size() >= 1 &&
+             data.userId.size() <= 128 &&
+             data.title is string &&
+             data.title.size() >= 1 &&
+             data.title.size() <= 140 &&
+             data.occasion is string &&
+             data.occasion.size() >= 1 &&
+             data.occasion.size() <= 60 &&
+             data.weatherVibe is string &&
+             data.weatherVibe.size() >= 1 &&
+             data.weatherVibe.size() <= 60 &&
+             data.temperatureC is int &&
+             data.temperatureC >= -30 &&
+             data.temperatureC <= 60 &&
+             data.itemIdsCsv is string &&
+             data.itemIdsCsv.size() <= 2000 &&
+             data.stylingNote is string &&
+             data.stylingNote.size() >= 1 &&
+             data.stylingNote.size() <= 1200 &&
+             data.colorTheoryNote is string &&
+             data.colorTheoryNote.size() <= 800 &&
+             data.colorHarmonyScore is int &&
+             data.colorHarmonyScore >= 0 &&
+             data.colorHarmonyScore <= 100 &&
+             data.pinnedToDashboard is bool &&
+             data.lastWornDate is string &&
+             data.lastWornDate.size() <= 30 &&
+             data.missingPieceSuggestion is string &&
+             data.missingPieceSuggestion.size() <= 500 &&
+             data.createdAt is timestamp &&
+             data.createdAt <= request.time &&
+             data.updatedAt is timestamp &&
+             data.updatedAt <= request.time;
+    }
+
+    match /users/{userId} {
+      allow get: if isOwner(userId) && isValidId(userId);
+      allow list: if isOwner(userId);
+
+      allow create: if isOwner(userId) &&
+                       isValidId(userId) &&
+                       incoming().keys().hasAll([
+                         'userId', 'name', 'heightCm', 'weightKg', 'temperatureC',
+                         'weatherCondition', 'lastMissingPieceTip', 'profileImageBase64',
+                         'createdAt', 'updatedAt'
+                       ]) &&
+                       incoming().keys().hasOnly([
+                         'userId', 'name', 'heightCm', 'weightKg', 'temperatureC',
+                         'weatherCondition', 'lastMissingPieceTip', 'profileImageBase64',
+                         'createdAt', 'updatedAt'
+                       ]) &&
+                       isValidUserProfile(incoming());
+
+      allow update: if isOwner(userId) &&
+                       isValidId(userId) &&
+                       isValidUserProfile(incoming()) &&
+                       incoming().userId == existing().userId &&
+                       incoming().createdAt == existing().createdAt &&
+                       incoming().diff(existing()).affectedKeys().hasOnly([
+                         'name', 'heightCm', 'weightKg', 'temperatureC',
+                         'weatherCondition', 'lastMissingPieceTip', 'profileImageBase64',
+                         'updatedAt'
+                       ]);
+
+      allow delete: if isOwner(userId) && isValidId(userId);
+
+      match /wardrobe_items/{itemId} {
+        allow get: if isOwner(userId) && isValidId(userId) && isValidId(itemId);
+        allow list: if isOwner(userId);
+
+        allow create: if isOwner(userId) &&
+                         isValidId(userId) &&
+                         isValidId(itemId) &&
+                         incoming().keys().hasAll([
+                           'userId', 'name', 'category', 'dominantColor', 'colorHex',
+                           'undertone', 'styleNotes', 'imageBase64', 'createdAt', 'updatedAt'
+                         ]) &&
+                         incoming().keys().hasOnly([
+                           'userId', 'name', 'category', 'dominantColor', 'colorHex',
+                           'undertone', 'styleNotes', 'imageBase64', 'createdAt', 'updatedAt'
+                         ]) &&
+                         isValidWardrobeItem(incoming());
+
+        allow update: if isOwner(userId) &&
+                         isValidId(userId) &&
+                         isValidId(itemId) &&
+                         isValidWardrobeItem(incoming()) &&
+                         incoming().userId == existing().userId &&
+                         incoming().createdAt == existing().createdAt &&
+                         incoming().diff(existing()).affectedKeys().hasOnly([
+                           'name', 'category', 'dominantColor', 'colorHex',
+                           'undertone', 'styleNotes', 'imageBase64', 'updatedAt'
+                         ]);
+
+        allow delete: if isOwner(userId) && isValidId(userId) && isValidId(itemId);
+      }
+
+      match /outfits/{outfitId} {
+        allow get: if isOwner(userId) && isValidId(userId) && isValidId(outfitId);
+        allow list: if isOwner(userId);
+
+        allow create: if isOwner(userId) &&
+                         isValidId(userId) &&
+                         isValidId(outfitId) &&
+                         incoming().keys().hasAll([
+                           'userId', 'title', 'occasion', 'weatherVibe', 'temperatureC',
+                           'itemIdsCsv', 'stylingNote', 'colorTheoryNote', 'colorHarmonyScore',
+                           'pinnedToDashboard', 'lastWornDate', 'missingPieceSuggestion',
+                           'createdAt', 'updatedAt'
+                         ]) &&
+                         incoming().keys().hasOnly([
+                           'userId', 'title', 'occasion', 'weatherVibe', 'temperatureC',
+                           'itemIdsCsv', 'stylingNote', 'colorTheoryNote', 'colorHarmonyScore',
+                           'pinnedToDashboard', 'lastWornDate', 'missingPieceSuggestion',
+                           'createdAt', 'updatedAt'
+                         ]) &&
+                         isValidOutfitCombo(incoming());
+
+        allow update: if isOwner(userId) &&
+                         isValidId(userId) &&
+                         isValidId(outfitId) &&
+                         isValidOutfitCombo(incoming()) &&
+                         incoming().userId == existing().userId &&
+                         incoming().createdAt == existing().createdAt &&
+                         incoming().diff(existing()).affectedKeys().hasOnly([
+                           'title', 'occasion', 'weatherVibe', 'temperatureC',
+                           'itemIdsCsv', 'stylingNote', 'colorTheoryNote', 'colorHarmonyScore',
+                           'pinnedToDashboard', 'lastWornDate', 'missingPieceSuggestion',
+                           'updatedAt'
+                         ]);
+
+        allow delete: if isOwner(userId) && isValidId(userId) && isValidId(outfitId);
+      }
+    }
+  }
+}

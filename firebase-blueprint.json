@@ -1,0 +1,244 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "Stores user physical metrics, weather defaults, and body frame styling preferences.",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "description": "Authenticated Firebase user UID."
+        },
+        "name": {
+          "type": "string",
+          "description": "Display name of the user."
+        },
+        "heightCm": {
+          "type": "integer",
+          "description": "User height in centimeters."
+        },
+        "weightKg": {
+          "type": "integer",
+          "description": "User weight in kilograms."
+        },
+        "temperatureC": {
+          "type": "integer",
+          "description": "Default local temperature in Celsius."
+        },
+        "weatherCondition": {
+          "type": "string",
+          "description": "Default local weather condition (Sunny, Humid, Rainy, Pleasant, Chilly)."
+        },
+        "lastMissingPieceTip": {
+          "type": "string",
+          "description": "Latest AI missing wardrobe piece suggestion."
+        },
+        "profileImageBase64": {
+          "type": "string",
+          "description": "Compressed JPEG Base64 string for user profile photo."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Creation timestamp populated via FieldValue.serverTimestamp()."
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Last update timestamp populated via FieldValue.serverTimestamp()."
+        }
+      },
+      "required": [
+        "userId",
+        "name",
+        "heightCm",
+        "weightKg",
+        "temperatureC",
+        "weatherCondition",
+        "lastMissingPieceTip",
+        "profileImageBase64",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "WardrobeItem": {
+      "title": "WardrobeItem",
+      "description": "Represents a wearable garment, outerwear layer, accessory, or perfume in the user's wardrobe.",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "description": "Owner Firebase UID."
+        },
+        "name": {
+          "type": "string",
+          "description": "Title of the wearable or perfume."
+        },
+        "category": {
+          "type": "string",
+          "enum": [
+            "Shirt / Top",
+            "Jacket",
+            "Hoodie",
+            "Pullover",
+            "Sweatshirt",
+            "Pant / Bottom",
+            "Shoe / Footwear",
+            "Perfume",
+            "Belt",
+            "Watch",
+            "Shades (Sunglasses)",
+            "Bracelet",
+            "V-Chain (Necklace)",
+            "Ring",
+            "Cap / Hat"
+          ],
+          "description": "Valid wardrobe item category including Jacket, Hoodie, Pullover, Sweatshirt, Perfume, tops, bottoms, shoes, and accessories."
+        },
+        "dominantColor": {
+          "type": "string",
+          "description": "Human-readable dominant color or fragrance family."
+        },
+        "colorHex": {
+          "type": "string",
+          "description": "6-digit hex color code (#RRGGBB)."
+        },
+        "undertone": {
+          "type": "string",
+          "description": "Color theory undertone (Warm, Cool, Neutral)."
+        },
+        "styleNotes": {
+          "type": "string",
+          "description": "AI dress understanding, fabric, color theory match notes, or scent profile."
+        },
+        "imageBase64": {
+          "type": "string",
+          "description": "Compressed JPEG Base64 image data."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Creation timestamp via FieldValue.serverTimestamp()."
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Update timestamp via FieldValue.serverTimestamp()."
+        }
+      },
+      "required": [
+        "userId",
+        "name",
+        "category",
+        "dominantColor",
+        "colorHex",
+        "undertone",
+        "styleNotes",
+        "imageBase64",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "OutfitCombo": {
+      "title": "OutfitCombo",
+      "description": "Represents a complete AI-generated outfit combination with color theory harmony and scent pairing.",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "description": "Owner Firebase UID."
+        },
+        "title": {
+          "type": "string",
+          "description": "Editorial look title."
+        },
+        "occasion": {
+          "type": "string",
+          "description": "Target occasion."
+        },
+        "weatherVibe": {
+          "type": "string",
+          "description": "Target weather vibe."
+        },
+        "temperatureC": {
+          "type": "integer",
+          "description": "Target temperature in Celsius."
+        },
+        "itemIdsCsv": {
+          "type": "string",
+          "description": "Comma-separated document IDs of selected WardrobeItem documents."
+        },
+        "stylingNote": {
+          "type": "string",
+          "description": "AI styling note explaining silhouette fit for height/weight, layering, and occasion."
+        },
+        "colorTheoryNote": {
+          "type": "string",
+          "description": "AI color wheel harmony explanation (Complementary, Analogous, Monochromatic, Triadic) and perfume pairing note."
+        },
+        "colorHarmonyScore": {
+          "type": "integer",
+          "description": "Color harmony percentage score (0-100)."
+        },
+        "pinnedToDashboard": {
+          "type": "boolean",
+          "description": "Whether this outfit is pinned to the Dashboard top 4 choices."
+        },
+        "lastWornDate": {
+          "type": "string",
+          "description": "YYYY-MM-DD date string when marked as worn today."
+        },
+        "missingPieceSuggestion": {
+          "type": "string",
+          "description": "Single-line AI missing piece suggestion."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Creation timestamp via FieldValue.serverTimestamp()."
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Update timestamp via FieldValue.serverTimestamp()."
+        }
+      },
+      "required": [
+        "userId",
+        "title",
+        "occasion",
+        "weatherVibe",
+        "temperatureC",
+        "itemIdsCsv",
+        "stylingNote",
+        "colorTheoryNote",
+        "colorHarmonyScore",
+        "pinnedToDashboard",
+        "lastWornDate",
+        "missingPieceSuggestion",
+        "createdAt",
+        "updatedAt"
+      ]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": {
+        "$ref": "#/entities/UserProfile"
+      },
+      "description": "User profile document keyed by authenticated Firebase UID."
+    },
+    "/users/{userId}/wardrobe_items/{itemId}": {
+      "schema": {
+        "$ref": "#/entities/WardrobeItem"
+      },
+      "description": "User-scoped subcollection of uploaded or AI-generated wearables and perfumes."
+    },
+    "/users/{userId}/outfits/{outfitId}": {
+      "schema": {
+        "$ref": "#/entities/OutfitCombo"
+      },
+      "description": "User-scoped subcollection of complete AI-curated outfit combinations."
+    }
+  }
+}

@@ -1,0 +1,21 @@
+<resources>
+    <string name="app_name">Styler</string>
+    <string name="splash_tagline">Personal AI Wardrobe &amp; Silhouette Curator</string>
+    <string name="splash_cta">Open Dashboard</string>
+    <string name="nav_dashboard">Dashboard</string>
+    <string name="nav_gallery">Gallery</string>
+    <string name="nav_style_ai">Style AI</string>
+    <string name="nav_profile">Profile</string>
+    <string name="fab_upload_description">Capture or Upload Wardrobe Item</string>
+    <string name="dashboard_quick_choices_title">Best Quick Outfit Choices (4 Outfits)</string>
+    <string name="dashboard_style_cta">Style Me</string>
+    <string name="gallery_title">Wardrobe Gallery</string>
+    <string name="style_ai_title">4 AI Outfit Combos</string>
+    <string name="profile_title">Style Profile &amp; Metrics</string>
+    <string name="delete_item">Delete Item</string>
+    <string name="delete_outfit">Delete Outfit</string>
+    <string name="pin_to_dashboard">Pin to Dashboard</string>
+    <string name="pinned_to_dashboard">Pinned</string>
+    <string name="mark_worn_today">Mark as Worn Today</string>
+    <string name="worn_today_badge">Worn Today</string>
+</resources>

@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<resources>
+    <string name="firestore_database_id" translatable="false">ai-studio-android-styler-9bd2466d-5561-4491-a909-fa358e484993</string>
+    <string name="recaptcha_site_key" translatable="false">6LdPbyYuAAAAAOsGFx56TLiPmz48TBUiaECVtGxR</string>
+</resources>
